@@ -1,6 +1,8 @@
 # 🌟 TikTok-Inspired Bouncing Ball Simulation
 
-[![GitHub stars](https://img.shields.io/github/stars/aiwebarchitects/tiktok-bouncing-ball.svg?style=social&label=Star)](https://github.com/aiwebarchitects/ball-simulation-from-TikTok) [![Follow on Twitter](https://img.shields.io/twitter/follow/aiwebarchitects.svg?style=social&label=Follow)](https://twitter.com/aiwebarchitects)
+![Bouncing Ball Simulation](https://flat-scooter-prehistoric.on-fleek.app/bouncing-ball-simulation-from-TikTok.png)
+
+[![GitHub stars](https://img.shields.io/github/stars/aiwebarchitects/ball-simulation-from-TikTok.svg?style=social&label=Star)](https://github.com/aiwebarchitects/ball-simulation-from-TikTok) [![Follow on Twitter](https://img.shields.io/twitter/follow/aiwebarchitects.svg?style=social&label=Follow)](https://twitter.com/aiwebarchitects)
 
 Remember those mesmerizing TikTok videos with colorful bouncing balls? Now you can create and customize your own with this interactive simulation! 🎉
 
@@ -24,7 +26,7 @@ Remember those mesmerizing TikTok videos with colorful bouncing balls? Now you c
 
 ## 🎬 Demo
 
-Check out our [live demo](https://github.com/aiwebarchitects/ball-simulation-from-TikTok) to see the simulation in action!
+Check out our [live demo](https://flat-scooter-prehistoric.on-fleek.app/) to see the simulation in action!
 
 ## 🛠️ Installation
 
