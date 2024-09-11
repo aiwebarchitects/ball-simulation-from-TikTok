@@ -107,6 +107,14 @@
         font-size: 1em;
         text-align: center;
     }
+    #socialLinks {
+        margin-top: 20px;
+        text-align: center;
+    }
+    #socialLinks a {
+        display: inline-block;
+        margin: 10px 5px;
+    }
     .toggle-switch {
         position: relative;
         display: inline-block;
@@ -181,6 +189,10 @@
     }
     .status-off {
         color: #f44336;
+    }
+    a {
+        text-decoration: none;
+        color: white;
     }
 </style>
 </head>
@@ -271,9 +283,20 @@
         </div>
         <div id="stats">Balls: 1 | Average Size: 10</div>
         <div id="fps">FPS: 0</div>
+        <div id="socialLinks">
+            <a href="https://github.com/aiwebarchitects/ball-simulation-from-TikTok">
+                <img src="https://img.shields.io/github/stars/aiwebarchitects/ball-simulation-from-TikTok.svg?style=social&label=Star" alt="GitHub stars">
+            </a>
+            <a href="https://twitter.com/aiwebarchitects">
+                <img src="https://img.shields.io/twitter/follow/aiwebarchitects.svg?style=social&label=Follow" alt="Follow on Twitter">
+            </a>
+            <a href="https://aiwebarchitects.com/">
+                <button class="button">Visit Shop</button>
+            </a>
+            <p>Created with ❤️ by <a href="https://aiwebarchitects.com/" title="AI Web Service Agency">AI Web Architects</a></p>
+        </div>
     </div>
 </div>
-
 <script>
 const canvas = document.getElementById('simulationCanvas');
 const ctx = canvas.getContext('2d');
