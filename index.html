@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>That one bouncing ball simulation from TikTok...?</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #1a0000;
+        color: #ffe0e0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .container {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+    }
+    h1 {
+        font-size: 1.4em;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 600;
+    }
+    #simulationCanvas {
+        border: 2px solid #ff4c4c;
+        border-radius: 10px;
+    }
+    .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 250px;
+        padding: 20px;
+        overflow-y: auto;
+        height: 100vh;
+        box-sizing: border-box;
+    }
+    .control-group {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 15px;
+        border-radius: 10px;
+    }
+    .button {
+        background-color: #ff4c4c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1em;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s, transform 0.1s;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .button:hover {
+        background-color: #ff3333;
+    }
+    .button:active {
+        transform: scale(0.98);
+    }
+    .slider-container {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+    .slider-container label {
+        margin-bottom: 5px;
+        font-weight: 300;
+    }
+    .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: #3a0000;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity .2s;
+    }
+    .slider:hover {
+        opacity: 1;
+    }
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ff4c4c;
+        cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ff4c4c;
+        cursor: pointer;
+    }
+    #stats, #fps {
+        margin-top: 20px;
+        font-size: 1em;
+        text-align: center;
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+        background-color: #ff4c4c;
+    }
+    input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
+    .toggle-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .toggle-container label {
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+    select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 5px;
+        background-color: #3a0000;
+        color: #ffe0e0;
+        border: 1px solid #ff4c4c;
+        font-family: 'Poppins', sans-serif;
+    }
+    .simulation-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
+    }
+    #simulationStatus {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .status-on {
+        color: #4caf50;
+    }
+    .status-off {
+        color: #f44336;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="controls">
+        <h1>That one bouncing ball simulation from TikTok...?</h1>
+        <div id="simulationStatus" class="status-off">Simulation: OFF</div>
+        <div class="control-group">
+            <button id="startStopButton" class="button">Start/Stop</button>
+            <button id="resetButton" class="button">Reset</button>
+            <button id="addBallButton" class="button">Add Ball</button>
+        </div>
+        <div class="control-group">
+            <div class="slider-container">
+                <label for="speedSlider">Speed</label>
+                <input type="range" min="1" max="500" value="100" class="slider" id="speedSlider">
+            </div>
+            <div class="slider-container">
+                <label for="cloneFrequencySlider">Clone Frequency</label>
+                <input type="range" min="1" max="20" value="3" class="slider" id="cloneFrequencySlider">
+            </div>
+            <div class="slider-container">
+                <label for="growthRateSlider">Growth Rate</label>
+                <input type="range" min="1" max="100" value="10" class="slider" id="growthRateSlider">
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="slider-container">
+                <label for="elasticitySlider">Elasticity</label>
+                <input type="range" min="50" max="150" value="100" class="slider" id="elasticitySlider">
+            </div>
+            <div class="slider-container">
+                <label for="gravitySlider">Gravity</label>
+                <input type="range" min="0" max="100" value="0" class="slider" id="gravitySlider">
+            </div>
+            <div class="slider-container">
+                <label for="bloomIntensitySlider">Bloom Intensity</label>
+                <input type="range" min="0" max="20" value="10" class="slider" id="bloomIntensitySlider">
+            </div>
+        </div>
+    </div>
+    <div class="simulation-container">
+        <canvas id="simulationCanvas" width="800" height="800"></canvas>
+    </div>
+    <div class="controls">
+        <div class="control-group">
+            <div class="slider-container">
+                <label for="randomnessSlider">Bounce Randomness</label>
+                <input type="range" min="0" max="100" value="20" class="slider" id="randomnessSlider">
+            </div>
+            <div class="slider-container">
+                <label for="volumeSlider">Sound Volume</label>
+                <input type="range" min="0" max="100" value="20" class="slider" id="volumeSlider">
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="toggle-container">
+                <label for="colorChangeToggle">Color Change on Bounce</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="colorChangeToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-container">
+                <label for="soundToggle">Sound Effects</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="soundToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-container">
+                <label for="ballCollisionToggle">Ball Collision</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="ballCollisionToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="environmentSelect">Environment</label>
+            <select id="environmentSelect">
+                <option value="circle">Circle</option>
+                <option value="square">Square</option>
+                <option value="triangle">Triangle</option>
+                <option value="squareWithObjects">Square with Objects</option>
+            </select>
+        </div>
+        <div id="stats">Balls: 1 | Average Size: 10</div>
+        <div id="fps">FPS: 0</div>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById('simulationCanvas');
+const ctx = canvas.getContext('2d');
+const startStopButton = document.getElementById('startStopButton');
+const resetButton = document.getElementById('resetButton');
+const addBallButton = document.getElementById('addBallButton');
+const speedSlider = document.getElementById('speedSlider');
+const cloneFrequencySlider = document.getElementById('cloneFrequencySlider');
+const growthRateSlider = document.getElementById('growthRateSlider');
+const elasticitySlider = document.getElementById('elasticitySlider');
+const gravitySlider = document.getElementById('gravitySlider');
+const bloomIntensitySlider = document.getElementById('bloomIntensitySlider');
+const randomnessSlider = document.getElementById('randomnessSlider');
+const volumeSlider = document.getElementById('volumeSlider');
+const colorChangeToggle = document.getElementById('colorChangeToggle');
+const soundToggle = document.getElementById('soundToggle');
+const ballCollisionToggle = document.getElementById('ballCollisionToggle');
+const environmentSelect = document.getElementById('environmentSelect');
+const statsDiv = document.getElementById('stats');
+const fpsDiv = document.getElementById('fps');
+const simulationStatus = document.getElementById('simulationStatus');
+
+let balls = [];
+let particles = [];
+let isRunning = false;
+let animationId;
+let currentEnvironment = 'circle';
+let obstacles = [];
+let lastTime = 0;
+let frameCount = 0;
+let lastFpsUpdate = 0;
+
+// Audio context setup
+let audioContext;
+function initAudio() {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function playBounceSound(volume, pitch) {
+    if (!audioContext || !soundToggle.checked) return;
+    
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(440 * pitch, audioContext.currentTime);
+    
+    gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.1);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+class Ball {
+    constructor(x, y, radius, dx, dy, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.dx = dx;
+        this.dy = dy;
+        this.color = color;
+        this.bounceCount = 0;
+        this.invulnerable = true;
+        this.invulnerabilityTimer = 500; // 500ms (0.5 second) invulnerability
+        this.lastBounceTime = 0;
+    }
+
+    draw() {
+        const bloomIntensity = bloomIntensitySlider.value / 20;
+        const glowSize = this.radius * (1 + bloomIntensity);
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, glowSize);
+        const rgbaColor = this.hexToRgba(this.color, 1);
+        const transparentColor = this.hexToRgba(this.color, 0);
+        
+        gradient.addColorStop(0, rgbaColor);
+        gradient.addColorStop(1 - bloomIntensity, rgbaColor);
+        gradient.addColorStop(1, transparentColor);
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, glowSize, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.closePath();
+
+        // Draw the solid ball
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+
+        // Add glow effect
+        ctx.shadowBlur = bloomIntensity * 20;
+        ctx.shadowColor = this.color;
+    }
+
+    hexToRgba(hex, alpha) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+    }
+
+    update(deltaTime) {
+        if (this.invulnerable) {
+            this.invulnerabilityTimer -= deltaTime;
+            if (this.invulnerabilityTimer <= 0) {
+                this.invulnerable = false;
+            }
+        }
+
+        // Store previous position
+        const prevX = this.x;
+        const prevY = this.y;
+
+        // Update position
+        this.x += this.dx * (speedSlider.value / 100);
+        this.y += this.dy * (speedSlider.value / 100);
+
+        // Apply gravity
+        this.dy += parseFloat(gravitySlider.value) / 1000;
+
+        // Check for collisions
+        const collision = this.checkCollision();
+
+        if (collision) {
+            // Revert to previous position
+            this.x = prevX;
+            this.y = prevY;
+
+            // Handle the collision
+            this.handleCollision(collision.nx, collision.ny, deltaTime);
+        }
+
+        // Ensure the ball stays within bounds
+        this.constrainToBounds();
+
+        // Check for ball collisions if enabled
+        if (ballCollisionToggle.checked) {
+            this.checkBallCollisions();
+        }
+    }
+
+    checkCollision() {
+        let collision = null;
+
+        if (currentEnvironment === 'circle') {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const maxRadius = canvas.width / 2 - this.radius;
+
+            const distanceFromCenter = Math.sqrt(Math.pow(this.x - centerX, 2) + Math.pow(this.y - centerY, 2));
+
+            if (distanceFromCenter > maxRadius) {
+                const nx = (this.x - centerX) / distanceFromCenter;
+                const ny = (this.y - centerY) / distanceFromCenter;
+                collision = { nx, ny };
+            }
+        } else if (currentEnvironment === 'square') {
+            if (this.x - this.radius < 0) collision = { nx: 1, ny: 0 };
+            if (this.x + this.radius > canvas.width) collision = { nx: -1, ny: 0 };
+            if (this.y - this.radius < 0) collision = { nx: 0, ny: 1 };
+            if (this.y + this.radius > canvas.height) collision = { nx: 0, ny: -1 };
+        } else if (currentEnvironment === 'triangle') {
+            // Triangle collision detection logic
+            const height = canvas.height;
+            const base = canvas.width;
+            
+            // Check bottom side
+            if (this.y + this.radius > height) {
+                collision = { nx: 0, ny: -1 };
+            }
+            
+            // Check left side
+            const leftSlope = height / (base / 2);
+            const leftYIntercept = -leftSlope * (this.x - this.radius) + this.y;
+            if (leftYIntercept > height) {
+                const angle = Math.atan(leftSlope);
+                collision = { nx: Math.cos(angle), ny: -Math.sin(angle) };
+            }
+            
+            // Check right side
+            const rightSlope = -height / (base / 2);
+            const rightYIntercept = -rightSlope * (this.x + this.radius) + this.y;
+            if (rightYIntercept > height) {
+                const angle = Math.atan(rightSlope);
+                collision = { nx: -Math.cos(angle), ny: -Math.sin(angle) };
+            }
+        } else if (currentEnvironment === 'squareWithObjects') {
+            // Square with objects collision detection logic
+            if (this.x - this.radius < 0) collision = { nx: 1, ny: 0 };
+            if (this.x + this.radius > canvas.width) collision = { nx: -1, ny: 0 };
+            if (this.y - this.radius < 0) collision = { nx: 0, ny: 1 };
+            if (this.y + this.radius > canvas.height) collision = { nx: 0, ny: -1 };
+
+            // Check collision with obstacles
+            for (let obstacle of obstacles) {
+                const dx = this.x - Math.max(obstacle.x, Math.min(this.x, obstacle.x + obstacle.width));
+                const dy = this.y - Math.max(obstacle.y, Math.min(this.y, obstacle.y + obstacle.height));
+                if (dx * dx + dy * dy < this.radius * this.radius) {
+                    const nx = dx === 0 ? 0 : dx / Math.abs(dx);
+                    const ny = dy === 0 ? 0 : dy / Math.abs(dy);
+                    collision = { nx, ny };
+                    break;
+                }
+            }
+        }
+
+        return collision;
+    }
+
+    handleCollision(nx, ny, deltaTime) {
+        const elasticity = elasticitySlider.value / 100;
+        const randomness = randomnessSlider.value / 100;
+
+        // Calculate the dot product of velocity and normal
+        const dotProduct = this.dx * nx + this.dy * ny;
+
+        // Calculate the new velocity components
+        this.dx = elasticity * (this.dx - 2 * dotProduct * nx);
+        this.dy = elasticity * (this.dy - 2 * dotProduct * ny);
+
+        // Add randomness to the bounce
+        this.dx += (Math.random() - 0.5) * randomness * 2;
+        this.dy += (Math.random() - 0.5) * randomness * 2;
+
+        // Increment bounce count
+        this.bounceCount++;
+
+        // Play bounce sound
+        const volume = volumeSlider.value / 100;
+        const pitch = 1 + (this.bounceCount % 5) * 0.1;
+        playBounceSound(volume, pitch);
+
+        // Change color if enabled
+        if (colorChangeToggle.checked) {
+            this.color = this.getRandomColor();
+        }
+
+        // Create particles on bounce
+        this.createParticles();
+
+        // Grow the ball
+        const growthRate = growthRateSlider.value / 100;
+        this.radius += growthRate;
+
+        this.lastBounceTime = Date.now();
+    }
+
+    constrainToBounds() {
+        if (currentEnvironment === 'circle') {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const maxRadius = canvas.width / 2 - this.radius;
+
+            const distanceFromCenter = Math.sqrt(Math.pow(this.x - centerX, 2) + Math.pow(this.y - centerY, 2));
+
+            if (distanceFromCenter > maxRadius) {
+                const angle = Math.atan2(this.y - centerY, this.x - centerX);
+                this.x = centerX + Math.cos(angle) * maxRadius;
+                this.y = centerY + Math.sin(angle) * maxRadius;
+            }
+        } else {
+            if (this.x - this.radius < 0) this.x = this.radius;
+            if (this.x + this.radius > canvas.width) this.x = canvas.width - this.radius;
+            if (this.y - this.radius < 0) this.y = this.radius;
+            if (this.y + this.radius > canvas.height) this.y = canvas.height - this.radius;
+        }
+    }
+
+    checkBallCollisions() {
+        for (let i = 0; i < balls.length; i++) {
+            if (this === balls[i]) continue;
+
+            const dx = this.x - balls[i].x;
+            const dy = this.y - balls[i].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < this.radius + balls[i].radius) {
+                // Collision detected
+                const angle = Math.atan2(dy, dx);
+                const sin = Math.sin(angle);
+                const cos = Math.cos(angle);
+
+                // Rotate ball velocities
+                const vx1 = this.dx * cos + this.dy * sin;
+                const vy1 = this.dy * cos - this.dx * sin;
+                const vx2 = balls[i].dx * cos + balls[i].dy * sin;
+                const vy2 = balls[i].dy * cos - balls[i].dx * sin;
+
+                // Swap ball velocities
+                const tempVx1 = vx1;
+                const tempVy1 = vy1;
+                this.dx = vx2 * cos - vy2 * sin;
+                this.dy = vy2 * cos + vx2 * sin;
+                balls[i].dx = tempVx1 * cos - tempVy1 * sin;
+                balls[i].dy = tempVy1 * cos + tempVx1 * sin;
+
+                // Move balls apart to prevent sticking
+                const overlap = this.radius + balls[i].radius - distance;
+                const moveX = (overlap / 2) * Math.cos(angle);
+                const moveY = (overlap / 2) * Math.sin(angle);
+                this.x += moveX;
+                this.y += moveY;
+                balls[i].x -= moveX;
+                balls[i].y -= moveY;
+
+                // Play collision sound
+                const volume = volumeSlider.value / 100;
+                const pitch = 1 + (Math.random() - 0.5) * 0.2;
+                playBounceSound(volume, pitch);
+
+                // Create particles on collision
+                this.createParticles();
+                balls[i].createParticles();
+            }
+        }
+    }
+
+    createParticles() {
+        if (particles.length < 100) {
+            const particleCount = 5;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle(this.x, this.y, this.color));
+            }
+        }
+    }
+
+    getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+}
+
+class Particle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = Math.random() * 3 - 1.5;
+        this.speedY = Math.random() * 3 - 1.5;
+        this.lifetime = 200;
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.lifetime--;
+    }
+
+    draw() {
+        ctx.globalAlpha = this.lifetime / 200;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+}
+
+function init() {
+    balls = [];
+    particles = [];
+    addBall();
+    initAudio();
+    createObstacles();
+}
+
+function createObstacles() {
+    obstacles = [];
+    if (currentEnvironment === 'squareWithObjects') {
+        obstacles.push({ x: 200, y: 200, width: 100, height: 100 });
+        obstacles.push({ x: 500, y: 500, width: 150, height: 80 });
+    }
+}
+
+function addBall() {
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
+    const radius = 10;
+    const dx = (Math.random() - 0.5) * 5;
+    const dy = (Math.random() - 0.5) * 5;
+    const color = getRandomColor();
+    balls.push(new Ball(x, y, radius, dx, dy, color));
+}
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function drawEnvironment() {
+    ctx.strokeStyle = '#ff4c4c';
+    ctx.lineWidth = 2;
+
+    if (currentEnvironment === 'circle') {
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - 1, 0, Math.PI * 2);
+        ctx.stroke();
+    } else if (currentEnvironment === 'square') {
+        ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+    } else if (currentEnvironment === 'triangle') {
+        ctx.beginPath();
+        ctx.moveTo(1, canvas.height - 1);
+        ctx.lineTo(canvas.width / 2, 1);
+        ctx.lineTo(canvas.width - 1, canvas.height - 1);
+        ctx.closePath();
+        ctx.stroke();
+    } else if (currentEnvironment === 'squareWithObjects') {
+        ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+        ctx.fillStyle = '#ff4c4c';
+        for (let obstacle of obstacles) {
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        }
+    }
+}
+
+function animate(currentTime) {
+    if (!isRunning) return;
+
+    const deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    frameCount++;
+    if (currentTime - lastFpsUpdate > 1000) {
+        const fps = Math.round((frameCount * 1000) / (currentTime - lastFpsUpdate));
+        fpsDiv.textContent = "FPS: " + fps;
+        frameCount = 0;
+        lastFpsUpdate = currentTime;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawEnvironment();
+
+    // Update and draw balls
+    for (let i = 0; i < balls.length; i++) {
+        balls[i].update(deltaTime);
+        balls[i].draw();
+    }
+
+    // Update and draw particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].lifetime <= 0) {
+            particles.splice(i, 1);
+        }
+    }
+
+    // Clone balls
+    if (Math.random() < 1 / (60 * cloneFrequencySlider.value)) {
+        if (balls.length < 50) { // Limit to 50 balls
+            const randomBall = balls[Math.floor(Math.random() * balls.length)];
+            const newBall = new Ball(
+                randomBall.x,
+                randomBall.y,
+                randomBall.radius,
+                randomBall.dx * (Math.random() * 0.5 + 0.75),
+                randomBall.dy * (Math.random() * 0.5 + 0.75),
+                getRandomColor()
+            );
+            balls.push(newBall);
+        }
+    }
+
+    // Update stats
+    updateStats();
+
+    animationId = requestAnimationFrame(animate);
+}
+
+function updateStats() {
+    const totalSize = balls.reduce((sum, ball) => sum + ball.radius, 0);
+    const averageSize = totalSize / balls.length;
+    statsDiv.textContent = "Balls: " + balls.length + " | Average Size: " + averageSize.toFixed(2);
+}
+
+function toggleSimulation() {
+    isRunning = !isRunning;
+    if (isRunning) {
+        lastTime = performance.now();
+        animate(lastTime);
+        simulationStatus.textContent = 'Simulation: ON';
+        simulationStatus.classList.remove('status-off');
+        simulationStatus.classList.add('status-on');
+    } else {
+        cancelAnimationFrame(animationId);
+        simulationStatus.textContent = 'Simulation: OFF';
+        simulationStatus.classList.remove('status-on');
+        simulationStatus.classList.add('status-off');
+    }
+}
+
+function resetSimulation() {
+    balls = [];
+    particles = [];
+    addBall();
+    createObstacles();
+    if (!isRunning) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawEnvironment();
+        balls[0].draw();
+    }
+    updateStats();
+}
+
+startStopButton.addEventListener('click', toggleSimulation);
+resetButton.addEventListener('click', resetSimulation);
+addBallButton.addEventListener('click', addBall);
+environmentSelect.addEventListener('change', (e) => {
+    currentEnvironment = e.target.value;
+    resetSimulation();
+});
+
+init();
+drawEnvironment();
+""
+balls[0].draw();
+updateStats();
+
+// Start animation loop if running
+if (isRunning) {
+    lastTime = performance.now();
+    animate(lastTime);
+}
+</script>
+</body>
+</html>
