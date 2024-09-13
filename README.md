@@ -50,10 +50,6 @@ Check out our [live demo](https://flat-scooter-prehistoric.on-fleek.app/) to see
 - 🎮 Fun and interactive way to de-stress
 - 💼 Impressive addition to your portfolio
 
-## 🛍️ Want More Amazing Designs?
-
-Love this TikTok-inspired simulation? Check out our [AI Web Architects shop](https://aiwebarchitects.com/) for more stunning website and app designs that will take your projects to the next level!
-
 ## 🐦 Stay Connected
 
 Follow us on [Twitter](https://twitter.com/aiwebarchitects) for the latest updates, design tips, and exclusive offers!
@@ -68,4 +64,4 @@ This project is open-source and available under the MIT License. Feel free to do
 
 ---
 
-Created with ❤️ by [AI Web Architects](https://aiwebarchitects.com/) | [GitHub](https://github.com/aiwebarchitects) | [Twitter](https://twitter.com/aiwebarchitects)
+Created with ❤️ by [GitHub](https://github.com/aiwebarchitects) | [Twitter](https://twitter.com/aiwebarchitects)
